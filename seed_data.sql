@@ -253,7 +253,7 @@ VALUES
 # Dana books international round trip EWR -> LHR and LHR -> EWR
 (3, '333-33-3333', '2026-04-22 09:00:00', 'Booked', 1350.00, 'Round_Trip'),
 
-# Jason has a cancelled domestic reservation
+# John has a cancelled domestic reservation
 (4, '111-11-1111', '2026-04-23 16:45:00', 'Cancelled', 260.00, 'One_Way');
 
 
