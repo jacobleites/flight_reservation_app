@@ -72,7 +72,8 @@ CREATE TABLE Customer (
     email varchar(30),
     gender varchar(10),
     dob date,
-    customer_name varchar(45),
+    firstName varchar(45), # broke name into first and last name
+    lastName varchar(45), # ^^^
     phone varchar(13),
     account_id int UNIQUE,
     username varchar(20) UNIQUE,
@@ -116,7 +117,30 @@ CREATE TABLE Ticket ( # replaced sequence_num with seqment_num; added reservatio
     UNIQUE (reservation_id, segment_num)
 );
 
+CREATE TABLE Employee (
+    employee_ssn CHAR(11),
+    firstName VARCHAR(30) NOT NULL,
+    lastName VARCHAR(30) NOT NULL,
+    acc_username VARCHAR(30) NOT NULL UNIQUE,
+    acc_password VARCHAR(40) NOT NULL,
+    role ENUM('ADMIN', 'CUSTOMER_REPRESENTATIVE') NOT NULL,
+    PRIMARY KEY (employee_ssn)
+);
 
+# added customerQuestions as employees (service reps) need to be able to answer questions asked by users.
+CREATE TABLE Customer_Question (
+    question_id INT AUTO_INCREMENT,
+    customer_ssn CHAR(11) NOT NULL,
+    employee_ssn CHAR(11),
+    question_text TEXT NOT NULL,
+    response_text TEXT,
+    question_status ENUM('OPEN', 'ANSWERED') DEFAULT 'OPEN',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    answered_at DATETIME,
+    PRIMARY KEY (question_id),
+    FOREIGN KEY (customer_ssn) REFERENCES Customer(customer_ssn),
+    FOREIGN KEY (employee_ssn) REFERENCES Employee(employee_ssn)
+);
 
 
 
