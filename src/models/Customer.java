@@ -12,6 +12,21 @@ public class Customer {
     private String username;
     private String password;
 
+    // primary customer for when we are creatng a customer (minus account_id, as it is auto generated when they make their account)
+    public Customer(String ssn, String email, String gender, String dob, String firstName, 
+                    String lastName, String phone, String username, String password ) {
+        this.customer_ssn = ssn;
+        this.email = email;
+        this.gender = gender;
+        this.dob = dob;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.username = username;
+        this.password = password;
+    }
+
+    // extra constructor for when we need to UPDATE a customer, so they already have an account id.
     public Customer(String ssn, String email, String gender, String dob, String firstName, 
                     String lastName, String phone, int account_id, String username, String password ) {
         this.customer_ssn = ssn;
@@ -25,6 +40,7 @@ public class Customer {
         this.username = username;
         this.password = password;
     }
+
 
     public String getSsn() {
         return customer_ssn;

@@ -3,8 +3,6 @@ package ui;
 import dao.CustomerDAO;
 import dao.EmployeeDAO;
 import java.util.Scanner;
-
-import com.mysql.cj.protocol.x.SyncFlushDeflaterOutputStream;
 import models.Customer;
 import models.Employee;
 
@@ -37,7 +35,7 @@ public class Main {
                     handleEmployeeLogin(scanner);
                     break;
                 case "3":
-                    handleCreateCustomerAccount;
+                    handleCreateCustomerAccount(scanner);
                     break;
                 case "4":
                     running = false;
@@ -67,7 +65,7 @@ public class Main {
 
         if (customer != null) {
             System.out.println("Login Successful!");
-            CustomerMenu.show(customer, scanner); // implement
+            //CustomerMenu.show(customer, scanner); // implement
         }
         else {
             System.out.println("Invalid username or password, please try again.");
@@ -87,7 +85,7 @@ public class Main {
         Employee employee = employeeDAO.login(username, password);
         if (employee != null){
             System.out.println("Login successful");
-            EmployeeMenu.show(employee, scanner);
+            //EmployeeMenu.show(employee, scanner); // implement
         } 
         else {
             System.out.println("Invalid username or password, please try again.");
@@ -97,7 +95,36 @@ public class Main {
     private static void handleCreateCustomerAccount(Scanner scanner){
         System.out.println("So you don't have an account yet... All good!");
 
-        
+        System.out.println("Please provide the information, that follows: ");
+        System.out.println();
+
+        System.out.println("First name: e.g; John");
+        String firstName = scanner.nextLine();
+        System.out.println("Last Name: e.g; Smith");
+        String lastName = scanner.nextLine();
+        System.out.println("Email: ");
+        String email = scanner.nextLine();
+        System.out.println("Phone number: e.g; 123-456-7890");
+        String phone = scanner.nextLine();
+        System.out.println("Date of birth: e.g; YYYY-MM-DD");
+        String dob = scanner.nextLine();
+        System.out.println("Gender: ");
+        String gender = scanner.nextLine();
+        System.out.println("SSN: e.g; 123-45-6879  ");
+        String ssn = scanner.nextLine();
+        System.out.println("Username: ");
+        String username = scanner.nextLine();
+        System.out.println("Password: ");
+        String password = scanner.nextLine();
+
+        CustomerDAO customerDAO = new CustomerDAO();
+        Customer customer = new Customer(ssn, email, gender, dob, firstName, lastName, phone, username, password);
+        if (customerDAO.createCustomer(customer)){
+            System.out.println("Account created successfully!");
+            //CustomerMenu.show(scanner); // implement
+        }
+        else
+            System.out.println("Failed to create account, exiting...");
 
     }
 

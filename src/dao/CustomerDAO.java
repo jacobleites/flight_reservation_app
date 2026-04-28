@@ -51,8 +51,8 @@ public class CustomerDAO {
     }
 
     public boolean createCustomer(Customer customer) {
-        String sql = "INSERT INTO Customer (customer_ssn, email, gender, dob, firstName, lastName, phone, account_id, username, acc_password) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Customer (customer_ssn, email, gender, dob, firstName, lastName, phone, username, acc_password) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -63,9 +63,8 @@ public class CustomerDAO {
             ps.setString(5, customer.getFirstName());
             ps.setString(6, customer.getLastName());
             ps.setString(7, customer.getPhone());
-            ps.setInt(8, customer.getAccount_id());
-            ps.setString(9, customer.getUsername());
-            ps.setString(10, customer.getPassword());
+            ps.setString(8, customer.getUsername());
+            ps.setString(9, customer.getPassword());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -95,7 +94,6 @@ public class CustomerDAO {
             return false;
         }
     }
-    // helper method to convert sql row into an object
     private Customer mapCustomer(ResultSet rs, String password) throws SQLException {
         return new Customer(
                 rs.getString("customer_ssn"),
