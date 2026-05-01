@@ -34,6 +34,28 @@ public class TicketDAO {
         }
     }
 
+    public List<Ticket> getTicketsByFlightNum(String airlineId, int flightNum) {
+        String sql = "SELECT ticket_num, reservation_id, airline_id, flight_num, segment_num, seat_num, fare, pay_date, special_meal, direction, ticket_class " +
+                "FROM Ticket WHERE airline_id = ? AND flight_num = ?";
+        List<Ticket> tickets = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, airlineId);
+            ps.setInt(2, flightNum);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    tickets.add(mapTicket(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return tickets;
+    }
+
     public List<Ticket> getTicketsForReservation(int reservationId) {
         String sql = "SELECT ticket_num, reservation_id, airline_id, flight_num, segment_num, seat_num, fare, pay_date, special_meal, direction, ticket_class " +
                 "FROM Ticket WHERE reservation_id = ?";

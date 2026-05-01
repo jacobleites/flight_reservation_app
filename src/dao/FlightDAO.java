@@ -31,7 +31,7 @@ public class FlightDAO {
         }
 
         return flights;
-    }
+    }    
 
     public Flight getFlight(String airlineId, int flightNum) {
         String sql = "SELECT flight_num, airline_id, aircraft_id, dep_time, arr_time, arr_airport, dep_airport " +

@@ -6,11 +6,11 @@ import java.util.Scanner;
 import models.Customer;
 import models.Employee;
 
-public class Main {
+public class MainMenu {
     private static final CustomerDAO customerDAO = new CustomerDAO();
     private static final EmployeeDAO employeeDAO = new EmployeeDAO();
     
-    public static void main(String [] args){
+    public static void show(String [] args){
         Scanner scanner = new Scanner(System.in);
 
         boolean running = true;
@@ -65,7 +65,7 @@ public class Main {
 
         if (customer != null) {
             System.out.println("Login Successful!");
-            //CustomerMenu.show(customer, scanner); // implement
+            CustomerMenu.show(customer, scanner); // implement
         }
         else {
             System.out.println("Invalid username or password, please try again.");
@@ -121,7 +121,7 @@ public class Main {
         Customer customer = new Customer(ssn, email, gender, dob, firstName, lastName, phone, username, password);
         if (customerDAO.createCustomer(customer)){
             System.out.println("Account created successfully!");
-            //CustomerMenu.show(scanner); // implement
+            CustomerMenu.show(customer, scanner); // implement
         }
         else
             System.out.println("Failed to create account, exiting...");

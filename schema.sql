@@ -1,13 +1,13 @@
 CREATE TABLE Airport (
 	airport_id char(3), #changed airport id to their respective 3 character label
-    airport_name varchar(45),
-    airport_city varchar(45),
+    airport_name varchar(100),
+    airport_city varchar(100),
     PRIMARY KEY(airport_id)
 );
 
 CREATE TABLE Airline (
 	airline_id char(2), # changed this datatype to char 2 (example, united is UA)
-    airline_name varchar(45),
+    airline_name varchar(100),
     PRIMARY KEY(airline_id) # dropped the aircraft_id in this primary key
 );
 
@@ -15,7 +15,10 @@ CREATE TABLE Aircraft (
 	airline_id char(2) NOT NULL, # airline that owns this aircraft 
     aircraft_id int,
     capacity int,
-    model varchar(45),
+    economy_class int, # number of econonmy class seats on aircraft
+    buisness_class int, # number of buisness class seats on aircraft
+    first_class int, # of first class seats on aircraft
+    model varchar(100),
     PRIMARY KEY (aircraft_id),
     FOREIGN KEY (airline_id) REFERENCES Airline(airline_id)
 );
@@ -28,7 +31,7 @@ CREATE TABLE Operates ( #removed aircraft_id from operates
     FOREIGN KEY (airline_id) REFERENCES Airline(airline_id)
 );
 
-CREATE TABLE Flight ( #removed dotw_op and added flight_days as a sub table, also removed seq_num
+CREATE TABLE Flight ( #removed dotw_op entirely, will instead generate flight_instances of flights on certain dates.
 	flight_num int,
     airline_id CHAR(2) NOT NULL,
     aircraft_id int NOT NULL,
@@ -43,13 +46,21 @@ CREATE TABLE Flight ( #removed dotw_op and added flight_days as a sub table, als
     FOREIGN KEY (dep_airport) REFERENCES Airport(airport_id) # added this foreign key referencing airport
 ); 
 
-CREATE TABLE Flight_days (
-	airline_id char(2),
-    flight_num int,
-    dotw ENUM('Mon','Tues','Wed','Thurs','Fri','Sat','Sun'),
-    PRIMARY KEY (airline_id, flight_num, dotw),
-    FOREIGN KEY (airline_id, flight_num) REFERENCES Flight(airline_id, flight_num) ON DELETE CASCADE
+CREATE TABLE Flight_Instance (
+	instance_id int AUTO_INCREMENT,
+    airline_id CHAR(3),
+	flight_num INT NOT NULL,
+    dep_datetime DATETIME NOT NULL,
+    arr_datetime DATETIME NOT NULL,
+    aircraft_id INT NOT NULL,
+    status ENUM('Scheduled', 'Cancelled', 'Delayed', 'Completed') DEFAULT 'Scheduled',
+    seats_available INT NOT NULL,
+    PRIMARY KEY (instance_id),
+    FOREIGN KEY (airline_id, flight_num) REFERENCES Flight(airline_id, flight_num),
+    FOREIGN KEY (aircraft_id) REFERENCES Aircraft(aircraft_id),
+	UNIQUE (airline_id, flight_num, dep_datetime)
 );
+
 
 CREATE TABLE DomesticFlight ( # not neccesary to have this table make references to everything, all that matters is flights 
 	airline_id CHAR(2) NOT NULL,
@@ -68,7 +79,8 @@ CREATE TABLE InternationalFlight ( # not neccesary to have this table make refer
 );
 
 CREATE TABLE Customer (
-	customer_ssn char(11),
+	customer_id int auto_increment UNIQUE,
+    customer_ssn char(11),
     email varchar(30),
     gender varchar(10),
     dob date,
@@ -82,7 +94,7 @@ CREATE TABLE Customer (
 );
 
 CREATE TABLE Reservations ( # added reservations table to keep track of customer flight history
-    reservation_id int AUTO_INCREMENT,
+    reservation_id int AUTO_INCREMENT UNIQUE,
 	customer_ssn char(11) NOT NULL,
     reservation_date datetime,
     status VARCHAR(20),
@@ -98,21 +110,20 @@ CREATE TABLE Ticket_Class (
     PRIMARY KEY(ticket_class)
 );
 
-CREATE TABLE Ticket ( # replaced sequence_num with seqment_num; added reservation table to keep track of all flight information
+CREATE TABLE Ticket ( # replaced sequence_num with seqment_num; added reservation table to keep track of all flight information, removed seat_num
 	ticket_num int AUTO_INCREMENT,
     reservation_id int NOT NULL,
-    airline_id CHAR(2) NOT NULL, # added airline_id to ticket
-    flight_num int NOT NULL, # added flight_num
+    instance_id int NOT NULL, # references flight instance, so we can remove airline_id, flight_num and flight_date.
     segment_num int NOT NULL,
-    seat_num char(3),
     fare DECIMAL(10, 2),
     pay_date datetime, # removed pay_time and just storing this as datetime
     special_meal boolean,
     direction ENUM('Outbound', 'Return') NOT NULL, # added direction for roundtrip/oneway table tracking.
     ticket_class varchar(20) NOT NULL, # merged class with tickets, 
+    status ENUM('Booked', 'Cancelled') NOT NULL DEFAULT 'Booked', # added status
     PRIMARY KEY (ticket_num),
 	FOREIGN KEY (reservation_id) REFERENCES Reservations(reservation_id),
-    FOREIGN KEY (airline_id, flight_num) REFERENCES Flight(airline_id, flight_num),
+    FOREIGN KEY (instance_id) REFERENCES Flight_Instance(instance_id),
     FOREIGN KEY (ticket_class) REFERENCES Ticket_Class(ticket_class),
     UNIQUE (reservation_id, segment_num)
 );
@@ -141,6 +152,3 @@ CREATE TABLE Customer_Question (
     FOREIGN KEY (customer_ssn) REFERENCES Customer(customer_ssn),
     FOREIGN KEY (employee_ssn) REFERENCES Employee(employee_ssn)
 );
-
-
-
