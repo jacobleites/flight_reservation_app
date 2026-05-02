@@ -1,4 +1,4 @@
-package ui;
+package trash;
 
 import dao.FlightInstanceDAO;
 import java.util.ArrayList;
