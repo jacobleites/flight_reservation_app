@@ -213,6 +213,7 @@ public class SearchFlightsPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "No return flights found.");
         }
     }
+    
 
     private void refreshDisplayedFlights() {
         outboundTableModel.setRowCount(0);
