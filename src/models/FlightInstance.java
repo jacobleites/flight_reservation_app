@@ -9,11 +9,12 @@ public class FlightInstance {
     private String dep_airport;
     private String arr_airport;
     private int available_seats;
+    private double price;
     private String status;
 
     public FlightInstance(int instance_id, int flight_num, String airline_id, String dep_datetime,
                           String arr_datetime, String dep_airport, String arr_airport,
-                          int available_seats, String status) {
+                          int available_seats, double price, String status) {
         this.instance_id = instance_id;
         this.flight_num = flight_num;
         this.airline_id = airline_id;
@@ -22,6 +23,7 @@ public class FlightInstance {
         this.dep_airport = dep_airport;
         this.arr_airport = arr_airport;
         this.available_seats = available_seats;
+        this.price = price;
         this.status = status;
     }
 
@@ -55,6 +57,10 @@ public class FlightInstance {
 
     public int getAvailableSeats() {
         return this.available_seats;
+    }
+
+    public double getPrice() {
+        return this.price;
     }
 
     public String getStatus() {

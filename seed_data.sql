@@ -1,4 +1,4 @@
-USE flight_reservation;
+USE flight_reservation_system;
 
 -- Core reference data required by Flight and Flight_Instance FKs
 INSERT INTO Airport (airport_id, airport_name, airport_city) VALUES
@@ -43,6 +43,10 @@ INSERT INTO Flight (flight_num, airline_id, aircraft_id, dep_time, arr_time, arr
 (5003, 'UA', 102, '17:10:00', '20:00:00', 'EWR', 'MIA'),
 (1004, 'UA', 102, '17:45:00', '20:35:00', 'DFW', 'EWR'),
 (5004, 'UA', 102, '21:30:00', '00:20:00', 'EWR', 'DFW'),
+(1005, 'UA', 101, '08:20:00', '11:55:00', 'DEN', 'EWR'),
+(5005, 'UA', 101, '13:10:00', '16:40:00', 'EWR', 'DEN'),
+(1006, 'UA', 102, '13:35:00', '15:25:00', 'LAX', 'DEN'),
+(5006, 'UA', 102, '17:00:00', '20:45:00', 'DEN', 'LAX'),
 (1201, 'DL', 201, '07:10:00', '09:20:00', 'IAD', 'JFK'),
 (5201, 'DL', 201, '10:10:00', '12:20:00', 'JFK', 'IAD'),
 (1202, 'DL', 201, '10:15:00', '12:55:00', 'ORD', 'JFK'),
@@ -59,6 +63,10 @@ INSERT INTO Flight (flight_num, airline_id, aircraft_id, dep_time, arr_time, arr
 (5403, 'AA', 302, '19:15:00', '22:30:00', 'LGA', 'PHX'),
 (1404, 'AA', 302, '19:20:00', '22:40:00', 'SEA', 'LGA'),
 (5404, 'AA', 302, '23:30:00', '02:50:00', 'LGA', 'SEA'),
+(1405, 'AA', 301, '09:25:00', '12:05:00', 'ORD', 'LGA'),
+(5405, 'AA', 301, '13:10:00', '15:50:00', 'LGA', 'ORD'),
+(1406, 'AA', 302, '13:35:00', '16:05:00', 'LAX', 'ORD'),
+(5406, 'AA', 302, '17:05:00', '19:30:00', 'ORD', 'LAX'),
 (1601, 'B6', 401, '07:25:00', '10:20:00', 'ATL', 'BOS'),
 (5601, 'B6', 401, '11:10:00', '14:05:00', 'BOS', 'ATL'),
 (1602, 'B6', 401, '12:00:00', '15:25:00', 'DEN', 'BOS'),
@@ -76,6 +84,7 @@ INSERT INTO Flight_Instance (
     dep_datetime,
     arr_datetime,
     aircraft_id,
+    fare,
     status,
     seats_available
 )
@@ -88,6 +97,7 @@ SELECT
         f.arr_time
     ) AS arr_datetime,
     f.aircraft_id,
+    ROUND(120 + ((f.flight_num % 10) * 18) + (d.day_offset * 4), 2) AS fare,
     CASE
         WHEN d.day_offset = 0 THEN 'Scheduled'
         WHEN d.day_offset = 1 AND f.flight_num % 4 = 0 THEN 'Delayed'

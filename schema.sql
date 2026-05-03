@@ -53,6 +53,7 @@ CREATE TABLE Flight_Instance (
     dep_datetime DATETIME NOT NULL,
     arr_datetime DATETIME NOT NULL,
     aircraft_id INT NOT NULL,
+    fare DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     status ENUM('Scheduled', 'Cancelled', 'Delayed', 'Completed') DEFAULT 'Scheduled',
     seats_available INT NOT NULL, # update to include economy / business / first
     PRIMARY KEY (instance_id),
@@ -151,4 +152,13 @@ CREATE TABLE Customer_Question (
     PRIMARY KEY (question_id),
     FOREIGN KEY (customer_ssn) REFERENCES Customer(customer_ssn),
     FOREIGN KEY (employee_ssn) REFERENCES Employee(employee_ssn)
+);
+
+CREATE TABLE Waiting_Line (
+	line_id int,
+    instance_id int,
+    priority_num int auto_increment,
+    date_entered DATE default current_timestamp,
+	PRIMARY KEY (line_id, instance_id),
+    FOREIGN KEY (instance_id) REFERENCES flight_instance(instance_id)
 );

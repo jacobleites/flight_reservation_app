@@ -1,10 +1,9 @@
 package ui;
 
 import dao.CustomerDAO;
-import models.Customer;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+import models.Customer;
 
 public class CreateCustomerPanel extends JPanel {
     private final MainFrame frame;
@@ -55,7 +54,7 @@ public class CreateCustomerPanel extends JPanel {
         formPanel.add(new JLabel("Email:"));
         formPanel.add(emailField);
 
-        formPanel.add(new JLabel("Phone Number:"));
+        formPanel.add(new JLabel("Phone Number (XXX-XXX-XXXX):"));
         formPanel.add(phoneField);
 
         formPanel.add(new JLabel("Date of Birth (YYYY-MM-DD):"));
@@ -64,7 +63,7 @@ public class CreateCustomerPanel extends JPanel {
         formPanel.add(new JLabel("Gender:"));
         formPanel.add(genderField);
 
-        formPanel.add(new JLabel("SSN:"));
+        formPanel.add(new JLabel("SSN (XXX-XX-XXXX):"));
         formPanel.add(ssnField);
 
         formPanel.add(new JLabel("Username:"));
