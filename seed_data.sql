@@ -103,4 +103,5 @@ JOIN (
 ) d;
 
 Insert into Employee (employee_ssn, firstName, lastName, acc_username, acc_password, role) Values 
+('22222222222', 'customerrep', 'test', 'customerrep', 'test', 'CUSTOMER_REPRESENTATIVE'),
 ('11111111111', 'admin', 'test', 'admin', 'test', 'ADMIN');

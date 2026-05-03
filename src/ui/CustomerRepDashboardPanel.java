@@ -32,7 +32,7 @@ public class CustomerRepDashboardPanel extends JPanel {
         JButton logoutButton = new JButton("Logout");
 
         manageReservationsButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Manage reservations not implemented yet.");
+            frame.showManageReservationsScreen(employee);
         });
 
         masterDataButton.addActionListener(e -> {

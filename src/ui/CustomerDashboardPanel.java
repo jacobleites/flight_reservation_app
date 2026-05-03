@@ -24,8 +24,7 @@ public class CustomerDashboardPanel extends JPanel {
         JPanel buttonPanel = new JPanel(new GridLayout(6, 1, 10, 10));
 
         JButton searchFlightsButton = new JButton("Search Flights");
-        JButton viewReservationsButton = new JButton("View My Reservations");
-        JButton cancelReservationButton = new JButton("Cancel Reservation");
+        JButton viewReservationsButton = new JButton("View/Cancel My Reservations");
         JButton askQuestionButton = new JButton("Ask Customer Service Question");
         JButton logoutButton = new JButton("Logout");
 
@@ -34,11 +33,7 @@ public class CustomerDashboardPanel extends JPanel {
         });
 
         viewReservationsButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "View reservations not implemented yet.");
-        });
-
-        cancelReservationButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Cancel reservation not implemented yet.");
+            frame.showViewReservationsScreen(customer);
         });
 
         askQuestionButton.addActionListener(e -> {
@@ -51,7 +46,6 @@ public class CustomerDashboardPanel extends JPanel {
 
         buttonPanel.add(searchFlightsButton);
         buttonPanel.add(viewReservationsButton);
-        buttonPanel.add(cancelReservationButton);
         buttonPanel.add(askQuestionButton);
         buttonPanel.add(logoutButton);
 
