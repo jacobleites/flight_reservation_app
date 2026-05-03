@@ -139,12 +139,26 @@ public class CreateCustomerPanel extends JPanel {
         boolean created = customerDAO.createCustomer(customer);
 
         if (created) {
-            JOptionPane.showMessageDialog(this, "Account created successfully!");
+            Customer createdCustomer = customerDAO.findBySsn(ssn);
+            if (createdCustomer == null) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Account created, but failed to reload customer profile.",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Account created successfully! Your Customer ID is " + createdCustomer.getAccount_id() + "."
+            );
 
             clearFields();
 
             // Send new customer directly into customer dashboard.
-            frame.showCustomerDashboard(customer);
+            frame.showCustomerDashboard(createdCustomer);
         } else {
             JOptionPane.showMessageDialog(
                     this,

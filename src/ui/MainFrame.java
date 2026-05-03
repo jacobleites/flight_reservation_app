@@ -1,10 +1,9 @@
 package ui;
 
+import java.awt.*;
+import javax.swing.*;
 import models.Customer;
 import models.Employee;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
@@ -73,9 +72,23 @@ public class MainFrame extends JFrame {
        showScreen("MANAGE_RESERVATIONS"); 
     }
 
+    public void showCustomerQuestionsScreen(Employee employee) {
+        CustomerQuestionsPanel panel = new CustomerQuestionsPanel(this, employee);
+        mainPanel.add(panel, "CUSTOMER_QUESTIONS");
+        showScreen("CUSTOMER_QUESTIONS");
+    }
+
     public void showViewReservationsScreen(Customer customer) {
         ViewReservationsPanel panel = new ViewReservationsPanel(this, customer);
         mainPanel.add(panel, "VIEW_RESERVATIONS");
         showScreen("VIEW_RESERVATIONS");
     }
+
+    public void showCustomerChatScreen(Customer customer) {
+        CustomerChatPanel panel = new CustomerChatPanel(this, customer);
+        mainPanel.add(panel, "CUSTOMER_CHAT");
+        showScreen("CUSTOMER_CHAT");
+    }
+
+    
 }

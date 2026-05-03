@@ -48,7 +48,7 @@ public class CustomerRepDashboardPanel extends JPanel {
         });
 
         customerQuestionsButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Ask question not implemented yet.");
+            frame.showCustomerQuestionsScreen(employee);
         });
 
         logoutButton.addActionListener(e -> {

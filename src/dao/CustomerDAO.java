@@ -50,22 +50,63 @@ public class CustomerDAO {
         return null;
     }
 
-    public boolean createCustomer(Customer customer) {
-        String sql = "INSERT INTO Customer (customer_ssn, email, gender, dob, firstName, lastName, phone, username, acc_password) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public Customer findByAccountId(int accountId) {
+        String sql = "SELECT customer_ssn, email, gender, dob, firstName, lastName, phone, account_id, username, acc_password " +
+                "FROM Customer WHERE account_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, customer.getSsn());
-            ps.setString(2, customer.getEmail());
-            ps.setString(3, customer.getGender());
-            ps.setString(4, customer.getDob());
-            ps.setString(5, customer.getFirstName());
-            ps.setString(6, customer.getLastName());
-            ps.setString(7, customer.getPhone());
-            ps.setString(8, customer.getUsername());
-            ps.setString(9, customer.getPassword());
-            return ps.executeUpdate() > 0;
+            ps.setInt(1, accountId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapCustomer(rs, rs.getString("acc_password"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean createCustomer(Customer customer) {
+        String nextIdSql = "SELECT COALESCE(MAX(account_id), 0) + 1 AS next_id FROM Customer";
+        String insertSql = "INSERT INTO Customer (customer_ssn, email, gender, dob, firstName, lastName, phone, account_id, username, acc_password) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
+            int nextAccountId = 1;
+            try (PreparedStatement nextIdPs = conn.prepareStatement(nextIdSql);
+                 ResultSet rs = nextIdPs.executeQuery()) {
+                if (rs.next()) {
+                    nextAccountId = rs.getInt("next_id");
+                }
+            }
+
+            try (PreparedStatement insertPs = conn.prepareStatement(insertSql)) {
+                insertPs.setString(1, customer.getSsn());
+                insertPs.setString(2, customer.getEmail());
+                insertPs.setString(3, customer.getGender());
+                insertPs.setString(4, customer.getDob());
+                insertPs.setString(5, customer.getFirstName());
+                insertPs.setString(6, customer.getLastName());
+                insertPs.setString(7, customer.getPhone());
+                insertPs.setInt(8, nextAccountId);
+                insertPs.setString(9, customer.getUsername());
+                insertPs.setString(10, customer.getPassword());
+
+                boolean created = insertPs.executeUpdate() > 0;
+                conn.commit();
+                return created;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

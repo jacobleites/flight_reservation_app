@@ -3,14 +3,14 @@ package ui;
 import dao.CustomerDAO;
 import dao.ReservationDAO;
 import dao.TicketDAO;
+import java.awt.*;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import models.Customer;
 import models.Employee;
 import models.Reservation;
 import models.Ticket;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.List;
 
 public class ManageReservationsPanel extends JPanel {
     private final MainFrame frame;
@@ -19,7 +19,7 @@ public class ManageReservationsPanel extends JPanel {
     private final TicketDAO ticketDAO = new TicketDAO();
     private final CustomerDAO customerDAO = new CustomerDAO();
 
-    private JTextField ssnSearchField;
+    private JTextField customerIdSearchField;
     private JTable reservationTable;
     private DefaultTableModel tableModel;
 
@@ -47,11 +47,11 @@ public class ManageReservationsPanel extends JPanel {
     private void setupCenterContent() {
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        ssnSearchField = new JTextField(12);
+        customerIdSearchField = new JTextField(12);
         JButton searchBtn = new JButton("Fetch History");
         searchBtn.addActionListener(e -> refreshReservationTable());
-        searchPanel.add(new JLabel("Lookup Customer (SSN):"));
-        searchPanel.add(ssnSearchField);
+        searchPanel.add(new JLabel("Lookup Customer (Customer ID):"));
+        searchPanel.add(customerIdSearchField);
         searchPanel.add(searchBtn);
 
         tableModel = new DefaultTableModel(new String[]{"ID", "Date", "Status", "Total Price", "Trip Type"}, 0) {
@@ -80,19 +80,44 @@ public class ManageReservationsPanel extends JPanel {
     }
 
     private void refreshReservationTable() {
-        String ssn = ssnSearchField.getText().trim();
-        if (ssn.isEmpty()) return;
+        String customerIdText = customerIdSearchField.getText().trim();
+        if (customerIdText.isEmpty()) return;
+
+        int customerId;
+        try {
+            customerId = Integer.parseInt(customerIdText);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Customer ID must be a number.");
+            return;
+        }
+
+        Customer target = customerDAO.findByAccountId(customerId);
+        if (target == null) {
+            JOptionPane.showMessageDialog(this, "Customer not found.");
+            tableModel.setRowCount(0);
+            return;
+        }
+
         tableModel.setRowCount(0);
-        List<Reservation> list = reservationDAO.getReservationsForCustomer(ssn);
+        List<Reservation> list = reservationDAO.getReservationsForCustomer(target.getSsn());
         for (Reservation r : list) {
             tableModel.addRow(new Object[]{r.getId(), r.getReservationDate(), r.getStatus(), "$" + r.getPrice(), r.getTripType()});
         }
     }
 
     private void initiateNewBooking() {
-        String ssn = JOptionPane.showInputDialog(this, "Enter Customer SSN:");
-        if (ssn == null || ssn.trim().isEmpty()) return;
-        Customer target = customerDAO.findBySsn(ssn.trim());
+        String customerIdText = JOptionPane.showInputDialog(this, "Enter Customer ID:");
+        if (customerIdText == null || customerIdText.trim().isEmpty()) return;
+
+        int customerId;
+        try {
+            customerId = Integer.parseInt(customerIdText.trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Customer ID must be a number.");
+            return;
+        }
+
+        Customer target = customerDAO.findByAccountId(customerId);
         if (target != null) {
             // Pass the current screen name so the Back button works correctly
             frame.showSearchFlightsScreen(target, "MANAGE_RESERVATIONS");

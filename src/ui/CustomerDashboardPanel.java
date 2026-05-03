@@ -1,9 +1,8 @@
 package ui;
 
-import models.Customer;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+import models.Customer;
 
 public class CustomerDashboardPanel extends JPanel {
     private final MainFrame frame;
@@ -35,9 +34,8 @@ public class CustomerDashboardPanel extends JPanel {
         viewReservationsButton.addActionListener(e -> {
             frame.showViewReservationsScreen(customer);
         });
-
         askQuestionButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Ask question not implemented yet.");
+            frame.showCustomerChatScreen(customer);
         });
 
         logoutButton.addActionListener(e -> {
