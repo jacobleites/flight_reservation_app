@@ -1,4 +1,4 @@
-USE flight_reservation_system;
+USE flight_reservation;
 
 -- Core reference data required by Flight and Flight_Instance FKs
 INSERT INTO Airport (airport_id, airport_name, airport_city) VALUES
