@@ -101,3 +101,6 @@ JOIN (
     SELECT 0 AS day_offset UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
     UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
 ) d;
+
+Insert into Employee (employee_ssn, firstName, lastName, acc_username, acc_password, role) Values 
+('11111111111', 'admin', 'test', 'admin', 'test', 'ADMIN');
