@@ -16,7 +16,7 @@ CREATE TABLE Aircraft (
     aircraft_id int,
     capacity int,
     economy_class int, # number of econonmy class seats on aircraft
-    buisness_class int, # number of buisness class seats on aircraft
+    business_class int, # number of buisness class seats on aircraft
     first_class int, # of first class seats on aircraft
     model varchar(100),
     PRIMARY KEY (aircraft_id),
@@ -48,13 +48,13 @@ CREATE TABLE Flight ( #removed dotw_op entirely, will instead generate flight_in
 
 CREATE TABLE Flight_Instance (
 	instance_id int AUTO_INCREMENT,
-    airline_id CHAR(3),
+    airline_id CHAR(2),
 	flight_num INT NOT NULL,
     dep_datetime DATETIME NOT NULL,
     arr_datetime DATETIME NOT NULL,
     aircraft_id INT NOT NULL,
     status ENUM('Scheduled', 'Cancelled', 'Delayed', 'Completed') DEFAULT 'Scheduled',
-    seats_available INT NOT NULL,
+    seats_available INT NOT NULL, # update to include economy / business / first
     PRIMARY KEY (instance_id),
     FOREIGN KEY (airline_id, flight_num) REFERENCES Flight(airline_id, flight_num),
     FOREIGN KEY (aircraft_id) REFERENCES Aircraft(aircraft_id),
@@ -96,8 +96,8 @@ CREATE TABLE Customer (
 CREATE TABLE Reservations ( # added reservations table to keep track of customer flight history
     reservation_id int AUTO_INCREMENT UNIQUE,
 	customer_ssn char(11) NOT NULL,
-    reservation_date datetime,
-    status VARCHAR(20),
+	reservation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+	status ENUM('Booked', 'Cancelled') NOT NULL DEFAULT 'Booked',    
     total_price DECIMAL (10,2),
     trip_type ENUM('One_Way', 'Round_Trip') NOT NULL, # moved trip_type (round/oneway) into reservations table 
     PRIMARY KEY (reservation_id),
@@ -125,7 +125,7 @@ CREATE TABLE Ticket ( # replaced sequence_num with seqment_num; added reservatio
 	FOREIGN KEY (reservation_id) REFERENCES Reservations(reservation_id),
     FOREIGN KEY (instance_id) REFERENCES Flight_Instance(instance_id),
     FOREIGN KEY (ticket_class) REFERENCES Ticket_Class(ticket_class),
-    UNIQUE (reservation_id, segment_num)
+	UNIQUE (reservation_id, direction, segment_num)
 );
 
 CREATE TABLE Employee (

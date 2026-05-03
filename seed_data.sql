@@ -23,7 +23,7 @@ INSERT INTO Airline (airline_id, airline_name) VALUES
 ('AA', 'American Airlines'),
 ('B6', 'JetBlue Airways');
 
-INSERT INTO Aircraft (airline_id, aircraft_id, capacity, economy_class, buisness_class, first_class, model) VALUES
+INSERT INTO Aircraft (airline_id, aircraft_id, capacity, economy_class, business_class, first_class, model) VALUES
 ('UA', 101, 166, 138, 20, 8, 'Boeing 737-800'),
 ('UA', 102, 179, 150, 21, 8, 'Airbus A320neo'),
 ('DL', 201, 160, 132, 20, 8, 'Boeing 737-900ER'),
@@ -36,23 +36,39 @@ INSERT INTO Aircraft (airline_id, aircraft_id, capacity, economy_class, buisness
 -- A bunch of scheduled flights
 INSERT INTO Flight (flight_num, airline_id, aircraft_id, dep_time, arr_time, arr_airport, dep_airport) VALUES
 (1001, 'UA', 101, '06:30:00', '08:05:00', 'BOS', 'EWR'),
+(5001, 'UA', 101, '09:00:00', '10:35:00', 'EWR', 'BOS'),
 (1002, 'UA', 101, '09:00:00', '11:35:00', 'ATL', 'EWR'),
+(5002, 'UA', 101, '12:30:00', '15:05:00', 'EWR', 'ATL'),
 (1003, 'UA', 102, '13:20:00', '16:10:00', 'MIA', 'EWR'),
+(5003, 'UA', 102, '17:10:00', '20:00:00', 'EWR', 'MIA'),
 (1004, 'UA', 102, '17:45:00', '20:35:00', 'DFW', 'EWR'),
+(5004, 'UA', 102, '21:30:00', '00:20:00', 'EWR', 'DFW'),
 (1201, 'DL', 201, '07:10:00', '09:20:00', 'IAD', 'JFK'),
+(5201, 'DL', 201, '10:10:00', '12:20:00', 'JFK', 'IAD'),
 (1202, 'DL', 201, '10:15:00', '12:55:00', 'ORD', 'JFK'),
+(5202, 'DL', 201, '13:45:00', '16:25:00', 'JFK', 'ORD'),
 (1203, 'DL', 202, '14:30:00', '17:15:00', 'DEN', 'JFK'),
+(5203, 'DL', 202, '18:05:00', '20:50:00', 'JFK', 'DEN'),
 (1204, 'DL', 202, '18:00:00', '21:10:00', 'LAX', 'JFK'),
+(5204, 'DL', 202, '22:00:00', '01:10:00', 'JFK', 'LAX'),
 (1401, 'AA', 301, '06:50:00', '09:55:00', 'MIA', 'LGA'),
+(5401, 'AA', 301, '10:45:00', '13:50:00', 'LGA', 'MIA'),
 (1402, 'AA', 301, '11:40:00', '14:30:00', 'DFW', 'LGA'),
+(5402, 'AA', 301, '15:20:00', '18:10:00', 'LGA', 'DFW'),
 (1403, 'AA', 302, '15:10:00', '18:25:00', 'PHX', 'LGA'),
+(5403, 'AA', 302, '19:15:00', '22:30:00', 'LGA', 'PHX'),
 (1404, 'AA', 302, '19:20:00', '22:40:00', 'SEA', 'LGA'),
+(5404, 'AA', 302, '23:30:00', '02:50:00', 'LGA', 'SEA'),
 (1601, 'B6', 401, '07:25:00', '10:20:00', 'ATL', 'BOS'),
+(5601, 'B6', 401, '11:10:00', '14:05:00', 'BOS', 'ATL'),
 (1602, 'B6', 401, '12:00:00', '15:25:00', 'DEN', 'BOS'),
+(5602, 'B6', 401, '16:15:00', '19:40:00', 'BOS', 'DEN'),
 (1603, 'B6', 402, '16:15:00', '19:30:00', 'SFO', 'BOS'),
-(1604, 'B6', 402, '20:05:00', '23:35:00', 'LAX', 'BOS');
+(5603, 'B6', 402, '20:20:00', '23:35:00', 'BOS', 'SFO'),
+(1604, 'B6', 402, '20:05:00', '23:35:00', 'LAX', 'BOS'),
+(5604, 'B6', 402, '00:25:00', '03:55:00', 'BOS', 'LAX');
 
--- Generate 10 days of instances for each flight (160 total instances)
+-- Generate 10 days of instances for each flight (320 total instances)
 -- dep_datetime/arr_datetime are computed from flight_date + scheduled times.
 INSERT INTO Flight_Instance (
     airline_id,

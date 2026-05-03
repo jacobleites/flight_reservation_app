@@ -1,4 +1,4 @@
-package ui;
+package trash;
 
 import dao.CustomerDAO;
 import dao.EmployeeDAO;
