@@ -55,15 +55,27 @@ public class MainFrame extends JFrame {
         }
     }
 
+    // Standard entry from Customer Dashboard
     public void showSearchFlightsScreen(Customer customer) {
-        SearchFlightsPanel panel = new SearchFlightsPanel(this, customer);
+        showSearchFlightsScreen(customer, "CUSTOMER_DASHBOARD");
+    }
+
+    // New overloaded method to specify navigation origin
+    public void showSearchFlightsScreen(Customer customer, String origin) {
+        SearchFlightsPanel panel = new SearchFlightsPanel(this, customer, origin);
         mainPanel.add(panel, "SEARCH_FLIGHTS");
         showScreen("SEARCH_FLIGHTS");
     }
 
     public void showManageReservationsScreen(Employee employee) {
-/*        ManageReservationsPanel panel = new ManageReservationsPanel(this, employee);
-        mainPanel.add(panel, "SEARCH_FLIGHTS");
-       showScreen("SEARCH_FLIGHTS");*/ 
+        ManageReservationsPanel panel = new ManageReservationsPanel(this, employee);
+        mainPanel.add(panel, "MANAGE_RESERVATIONS");
+       showScreen("MANAGE_RESERVATIONS"); 
+    }
+
+    public void showViewReservationsScreen(Customer customer) {
+        ViewReservationsPanel panel = new ViewReservationsPanel(this, customer);
+        mainPanel.add(panel, "VIEW_RESERVATIONS");
+        showScreen("VIEW_RESERVATIONS");
     }
 }
