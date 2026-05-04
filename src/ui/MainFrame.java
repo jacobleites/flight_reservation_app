@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import models.Customer;
 import models.Employee;
+import models.FlightItinerary;
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
@@ -64,6 +65,31 @@ public class MainFrame extends JFrame {
         SearchFlightsPanel panel = new SearchFlightsPanel(this, customer, origin);
         mainPanel.add(panel, "SEARCH_FLIGHTS");
         showScreen("SEARCH_FLIGHTS");
+    }
+
+    public void showBookFlightScreen(Customer customer) {
+        BookFlightPanel panel = new BookFlightPanel(this, customer);
+        mainPanel.add(panel, "BOOK_FLIGHT");
+        showScreen("BOOK_FLIGHT");
+    }
+
+    public void showBookFlightScreen(
+            Customer customer,
+            String previousScreen,
+            String tripType,
+            FlightItinerary outboundItinerary,
+            FlightItinerary returnItinerary
+    ) {
+        BookFlightPanel panel = new BookFlightPanel(
+                this,
+                customer,
+                previousScreen,
+                tripType,
+                outboundItinerary,
+                returnItinerary
+        );
+        mainPanel.add(panel, "BOOK_FLIGHT");
+        showScreen("BOOK_FLIGHT");
     }
 
     public void showManageReservationsScreen(Employee employee) {

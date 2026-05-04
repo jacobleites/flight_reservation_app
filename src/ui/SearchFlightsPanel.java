@@ -13,9 +13,11 @@ import javax.swing.table.DefaultTableModel;
 import models.Customer;
 import models.FlightInstance;
 import models.FlightItinerary;
-import services.BookingService;
 
 public class SearchFlightsPanel extends JPanel {
+    private static final double BUSINESS_MULTIPLIER = 2.0;
+    private static final double FIRST_MULTIPLIER = 4.0;
+    private static final double ECONOMY_CANCELLATION_FEE = 50.0;
     private final MainFrame frame;
     private final Customer customer;
     private final String previousScreen;
@@ -351,42 +353,30 @@ public class SearchFlightsPanel extends JPanel {
 
     private void bookSelectedFlights() {
         int outboundRow = outboundTable.getSelectedRow();
-        if (outboundRow == -1) {
+        if (outboundRow < 0 || outboundRow >= displayedOutboundItineraries.size()) {
             JOptionPane.showMessageDialog(this, "Please select an outbound flight.");
             return;
         }
 
         FlightItinerary outbound = displayedOutboundItineraries.get(outboundRow);
-        FlightInstance outboundInstance = outbound.getFirstSegment();
-        FlightInstance returnInstance = null;
+        FlightItinerary selectedReturn = null;
+        String tripType = (String) tripTypeBox.getSelectedItem();
 
-        if ("Round Trip".equals(tripTypeBox.getSelectedItem())) {
+        if ("Round Trip".equals(tripType)) {
             int returnRow = returnTable.getSelectedRow();
-            if (returnRow == -1) {
+            if (returnRow < 0 || returnRow >= displayedReturnItineraries.size()) {
                 JOptionPane.showMessageDialog(this, "Please select a return flight.");
                 return;
             }
-            FlightItinerary ret = displayedReturnItineraries.get(returnRow);
-            returnInstance = ret.getFirstSegment();
+            selectedReturn = displayedReturnItineraries.get(returnRow);
         }
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Confirm booking for " + customer.getFirstName() + "?", "Confirm", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) return;
-
-        BookingService service = new BookingService();
-        if (service.bookFlight(customer, outboundInstance, returnInstance, "Economy")) {
-            JOptionPane.showMessageDialog(this, "Reservation successfully created!");
-            frame.showScreen(previousScreen);
-        } else {
-            JOptionPane.showMessageDialog(this, "Booking failed.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private String getSegmentIds(FlightItinerary itinerary) {
-        List<String> ids = new ArrayList<>();
-        for (FlightInstance segment : itinerary.getSegments()) {
-            ids.add(String.valueOf(segment.getInstanceId()));
-        }
-        return String.join(", ", ids);
+        frame.showBookFlightScreen(
+                customer,
+                "SEARCH_FLIGHTS",
+                tripType == null ? "One Way" : tripType,
+                outbound,
+                selectedReturn
+        );
     }
 }

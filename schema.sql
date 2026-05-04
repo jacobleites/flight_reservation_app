@@ -55,7 +55,6 @@ CREATE TABLE Flight_Instance (
     aircraft_id INT NOT NULL,
     fare DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     status ENUM('Scheduled', 'Cancelled', 'Delayed', 'Completed') DEFAULT 'Scheduled',
-    seats_available INT NOT NULL, # update to include economy / business / first
     PRIMARY KEY (instance_id),
     FOREIGN KEY (airline_id, flight_num) REFERENCES Flight(airline_id, flight_num),
     FOREIGN KEY (aircraft_id) REFERENCES Aircraft(aircraft_id),
@@ -98,7 +97,8 @@ CREATE TABLE Reservations ( # added reservations table to keep track of customer
     reservation_id int AUTO_INCREMENT UNIQUE,
 	customer_ssn char(11) NOT NULL,
 	reservation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-	status ENUM('Booked', 'Cancelled') NOT NULL DEFAULT 'Booked',    
+	status ENUM('Booked', 'Cancelled') NOT NULL DEFAULT 'Booked',
+    booking_fee DECIMAL (8,2) NOT NULL DEFAULT (0.00),
     total_price DECIMAL (10,2),
     trip_type ENUM('One_Way', 'Round_Trip') NOT NULL, # moved trip_type (round/oneway) into reservations table 
     PRIMARY KEY (reservation_id),
@@ -109,6 +109,19 @@ CREATE TABLE Ticket_Class (
 	ticket_class VARCHAR(20),
     change_fee DECIMAL(10,2) NOT NULL,
     PRIMARY KEY(ticket_class)
+);
+
+CREATE TABLE Flight_Class_Inventory (
+    inventory_id INT AUTO_INCREMENT,
+    instance_id INT NOT NULL,
+    ticket_class VARCHAR(20) NOT NULL,
+    total_seats INT NOT NULL,
+    available_seats INT NOT NULL,
+    base_price DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (inventory_id),
+    FOREIGN KEY (instance_id) REFERENCES Flight_Instance(instance_id) ON DELETE CASCADE,
+    FOREIGN KEY (ticket_class) REFERENCES Ticket_Class(ticket_class),
+    UNIQUE (instance_id, ticket_class)
 );
 
 CREATE TABLE Ticket ( # replaced sequence_num with seqment_num; added reservation table to keep track of all flight information, removed seat_num
@@ -155,10 +168,14 @@ CREATE TABLE Customer_Question (
 );
 
 CREATE TABLE Waiting_Line (
-	line_id int,
-    instance_id int,
-    priority_num int auto_increment,
-    date_entered DATE default current_timestamp,
-	PRIMARY KEY (line_id, instance_id),
-    FOREIGN KEY (instance_id) REFERENCES flight_instance(instance_id)
+	waitlist_id int auto_increment,
+    customer_ssn CHAR(11) NOT NULL,
+    instance_id int NOT NULL,
+    priority_num int,
+    time_entered DATETIME default current_timestamp,
+	status ENUM('WAITING', 'NOTIFIED', 'BOOKED', 'CANCELLED') DEFAULT 'WAITING',
+	PRIMARY KEY (waitlist_id),
+    FOREIGN KEY (customer_ssn) REFERENCES Customer(customer_ssn),
+    FOREIGN KEY (instance_id) REFERENCES Flight_Instance(instance_id),
+    UNIQUE (customer_ssn, instance_id)
 );

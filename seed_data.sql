@@ -85,8 +85,7 @@ INSERT INTO Flight_Instance (
     arr_datetime,
     aircraft_id,
     fare,
-    status,
-    seats_available
+    status
 )
 SELECT
     f.airline_id,
@@ -103,8 +102,7 @@ SELECT
         WHEN d.day_offset = 1 AND f.flight_num % 4 = 0 THEN 'Delayed'
         WHEN d.day_offset = 2 AND f.flight_num % 7 = 0 THEN 'Cancelled'
         ELSE 'Scheduled'
-    END AS status,
-    GREATEST(0, a.capacity - (10 + ((f.flight_num + d.day_offset) % 40))) AS seats_available
+    END AS status
 FROM Flight f
 JOIN Aircraft a ON a.aircraft_id = f.aircraft_id
 JOIN (
@@ -112,6 +110,41 @@ JOIN (
     UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
 ) d;
 
+INSERT INTO Ticket_Class (ticket_class, change_fee) VALUES
+('Economy', 50.00),
+('Business', 0.00),
+('First', 0.00);
+
+INSERT INTO Flight_Class_Inventory (instance_id, ticket_class, total_seats, available_seats, base_price)
+SELECT
+    fi.instance_id,
+    classes.ticket_class,
+    CASE classes.ticket_class
+        WHEN 'Economy' THEN a.economy_class
+        WHEN 'Business' THEN a.business_class
+        WHEN 'First' THEN a.first_class
+    END AS total_seats,
+    CASE classes.ticket_class
+        WHEN 'Economy' THEN a.economy_class
+        WHEN 'Business' THEN a.business_class
+        WHEN 'First' THEN a.first_class
+    END AS available_seats,
+    CASE classes.ticket_class
+        WHEN 'Economy' THEN fi.fare
+        WHEN 'Business' THEN ROUND(fi.fare * 2.00, 2)
+        WHEN 'First' THEN ROUND(fi.fare * 3.00, 2)
+    END AS base_price
+FROM Flight_Instance fi
+JOIN Aircraft a ON a.aircraft_id = fi.aircraft_id
+JOIN (
+    SELECT 'Economy' AS ticket_class
+    UNION ALL SELECT 'Business'
+    UNION ALL SELECT 'First'
+) classes;
+
 Insert into Employee (employee_ssn, firstName, lastName, acc_username, acc_password, role) Values 
 ('22222222222', 'customerrep', 'test', 'customerrep', 'test', 'CUSTOMER_REPRESENTATIVE'),
 ('11111111111', 'admin', 'test', 'admin', 'test', 'ADMIN');
+INSERT INTO Customer (customer_ssn, email, gender, dob, firstName, lastName, phone, account_id, username, acc_password) VALUES 
+					('111-11-1111', 'jb@example.com', 'male', '2004-08-10', 'jason', 'billings', '000-000-0000', 1001, 'jasonb', 'password');
+

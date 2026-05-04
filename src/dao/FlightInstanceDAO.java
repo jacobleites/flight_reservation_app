@@ -10,22 +10,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 import models.FlightInstance;
 import models.FlightItinerary;
-
 
 public class FlightInstanceDAO {
     private static final int MAX_SEGMENTS = 3;
     private static final long MIN_LAYOVER_MILLIS = 45L * 60L * 1000L;
     private static final long MAX_LAYOVER_MILLIS = 6L * 60L * 60L * 1000L;
 
+    private static final String SEARCH_SELECT =
+            "SELECT fi.instance_id, fi.flight_num, fi.airline_id, fi.dep_datetime, fi.arr_datetime, " +
+            "f.dep_airport, f.arr_airport, COALESCE(inv.total_available, 0) AS available_seats, fi.status, fi.fare AS price, " +
+            "dep.airport_name AS dep_airport_name, arr.airport_name AS arr_airport_name, ac.model AS aircraft_model " +
+            "FROM Flight_Instance fi " +
+            "JOIN Flight f ON f.airline_id = fi.airline_id AND f.flight_num = fi.flight_num " +
+            "LEFT JOIN Airport dep ON dep.airport_id = f.dep_airport " +
+            "LEFT JOIN Airport arr ON arr.airport_id = f.arr_airport " +
+            "LEFT JOIN Aircraft ac ON ac.aircraft_id = fi.aircraft_id " +
+            "LEFT JOIN ( " +
+            "  SELECT instance_id, SUM(available_seats) AS total_available " +
+            "  FROM Flight_Class_Inventory " +
+            "  GROUP BY instance_id " +
+            ") inv ON inv.instance_id = fi.instance_id ";
+
     public List<FlightInstance> searchFlights(String depAirport, String arrAirport, String date, boolean isFlexible) {
-        String sql = "SELECT fi.instance_id, fi.flight_num, fi.airline_id, fi.dep_datetime, fi.arr_datetime, " +
-                "f.dep_airport, f.arr_airport, fi.seats_available AS available_seats, fi.status, fi.fare AS price " +
-                "FROM Flight_Instance fi " +
-                "JOIN Flight f ON f.airline_id = fi.airline_id AND f.flight_num = fi.flight_num " +
+        String sql = SEARCH_SELECT +
                 "WHERE f.dep_airport = ? AND f.arr_airport = ? AND ";
         if (isFlexible) {
             sql += "fi.dep_datetime >= DATE_SUB(?, INTERVAL 3 DAY) AND fi.dep_datetime < DATE_ADD(?, INTERVAL 4 DAY)";
@@ -40,7 +51,7 @@ public class FlightInstanceDAO {
             ps.setString(2, arrAirport);
             ps.setString(3, date);
             ps.setString(4, date);
-                
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     flights.add(mapFlightInstance(rs));
@@ -50,6 +61,31 @@ public class FlightInstanceDAO {
             e.printStackTrace();
         }
 
+        return flights;
+    }
+
+    public List<FlightInstance> searchBookableFlights(String depAirport, String arrAirport, String date) {
+        String sql = SEARCH_SELECT +
+                "WHERE f.dep_airport = ? AND f.arr_airport = ? " +
+                "AND fi.dep_datetime >= ? AND fi.dep_datetime < DATE_ADD(?, INTERVAL 1 DAY) " +
+                "ORDER BY fi.dep_datetime ASC";
+
+        List<FlightInstance> flights = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, depAirport);
+            ps.setString(2, arrAirport);
+            ps.setString(3, date);
+            ps.setString(4, date);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    flights.add(mapFlightInstance(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return flights;
     }
 
@@ -64,7 +100,10 @@ public class FlightInstanceDAO {
                 rs.getString("arr_airport"),
                 rs.getInt("available_seats"),
                 rs.getDouble("price"),
-                rs.getString("status")
+                rs.getString("status"),
+                rs.getString("dep_airport_name"),
+                rs.getString("arr_airport_name"),
+                rs.getString("aircraft_model")
         );
     }
 
@@ -135,10 +174,7 @@ public class FlightInstanceDAO {
     }
 
     private List<FlightInstance> searchAllFlightsInWindow(String date, boolean isFlexible) {
-        String sql = "SELECT fi.instance_id, fi.flight_num, fi.airline_id, fi.dep_datetime, fi.arr_datetime, " +
-                "f.dep_airport, f.arr_airport, fi.seats_available AS available_seats, fi.status, fi.fare AS price " +
-                "FROM Flight_Instance fi " +
-                "JOIN Flight f ON f.airline_id = fi.airline_id AND f.flight_num = fi.flight_num WHERE ";
+        String sql = SEARCH_SELECT + "WHERE ";
         if (isFlexible) {
             sql += "fi.dep_datetime >= DATE_SUB(?, INTERVAL 3 DAY) AND fi.dep_datetime < DATE_ADD(?, INTERVAL 4 DAY)";
         } else {

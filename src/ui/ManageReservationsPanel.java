@@ -4,6 +4,7 @@ import dao.CustomerDAO;
 import dao.ReservationDAO;
 import dao.TicketDAO;
 import java.awt.*;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,13 +12,17 @@ import models.Customer;
 import models.Employee;
 import models.Reservation;
 import models.Ticket;
+import services.BookingResult;
+import services.BookingService;
 
 public class ManageReservationsPanel extends JPanel {
+    private static final double ECONOMY_CANCELLATION_FEE = 50.0;
     private final MainFrame frame;
     private final Employee employee;
     private final ReservationDAO reservationDAO = new ReservationDAO();
     private final TicketDAO ticketDAO = new TicketDAO();
     private final CustomerDAO customerDAO = new CustomerDAO();
+    private final BookingService bookingService = new BookingService();
 
     private JTextField customerIdSearchField;
     private JTable reservationTable;
@@ -151,14 +156,52 @@ public class ManageReservationsPanel extends JPanel {
         }
         JOptionPane.showMessageDialog(this, sb.toString());
     }
-
+    // TODO: repair this method.
     private void cancelSelectedReservation() {
         int row = reservationTable.getSelectedRow();
         if (row == -1) return;
         int resId = (int) tableModel.getValueAt(row, 0);
-        if (reservationDAO.cancelReservation(resId)) {
-            JOptionPane.showMessageDialog(this, "Cancelled.");
+        boolean cancelled;
+        double fee = calculateCancellationFee(resId);
+        if (fee > 0) {
+            int feeConfirm = JOptionPane.showConfirmDialog(
+                    this,
+                    String.format("This reservation includes Economy ticket(s).\nA cancellation fee of $%.2f is required.\nYes = charge fee, No = waive fee and charge $0.00, Cancel = abort.", fee),
+                    "Cancellation Fee Required",
+                    JOptionPane.YES_NO_CANCEL_OPTION
+            );
+            if (feeConfirm == JOptionPane.CANCEL_OPTION || feeConfirm == JOptionPane.CLOSED_OPTION) {
+                return;
+            }
+            BigDecimal feeToApply = (feeConfirm == JOptionPane.NO_OPTION) ? BigDecimal.ZERO : BigDecimal.valueOf(fee);
+            BookingResult result = bookingService.cancelReservationAndNotify(resId, feeToApply);
+            cancelled = result.isSuccess();
+            if (!cancelled) {
+                JOptionPane.showMessageDialog(this, result.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(this, result.getMessage());
+            }
+        } else {
+            BookingResult result = bookingService.cancelReservationAndNotify(resId, BigDecimal.ZERO);
+            cancelled = result.isSuccess();
+            if (!cancelled) {
+                JOptionPane.showMessageDialog(this, result.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(this, result.getMessage());
+            }
+        }
+        if (cancelled) {
             refreshReservationTable();
         }
+    }
+
+    private double calculateCancellationFee(int reservationId) {
+        List<Ticket> tickets = ticketDAO.getTicketsForReservation(reservationId);
+        for (Ticket ticket : tickets) {
+            if ("Economy".equalsIgnoreCase(ticket.getTicketClass())) {
+                return ECONOMY_CANCELLATION_FEE;
+            }
+        }
+        return 0.0;
     }
 }

@@ -46,6 +46,10 @@ public class Customer {
         return customer_ssn;
     }
 
+    public String getCustomerSsn() {
+        return customer_ssn;
+    }
+
     public String getEmail() {
         return email;
     }
