@@ -116,5 +116,21 @@ public class MainFrame extends JFrame {
         showScreen("CUSTOMER_CHAT");
     }
 
-    
+    public void showMasterDataPanel(Employee employee) {
+        MasterDataPanel panel = new MasterDataPanel(this, employee);
+        mainPanel.add(panel, "MASTER_DATA");
+        showScreen("MASTER_DATA");
+    }
+
+    public void showWaitingListPanel(Employee employee) {
+        WaitingListPanel panel = new WaitingListPanel(this, employee);
+        mainPanel.add(panel, "WAITING_LIST");
+        showScreen("WAITING_LIST");
+    }
+
+    public void showAirportSchedulesPanel(Employee employee) {
+        AirportSchedulesPanel panel = new AirportSchedulesPanel(this, employee);
+        mainPanel.add(panel, "AIRPORT_SCHEDULES");
+        showScreen("AIRPORT_SCHEDULES");
+    }
 }

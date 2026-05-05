@@ -36,15 +36,15 @@ public class CustomerRepDashboardPanel extends JPanel {
         });
 
         masterDataButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Master data not implemented yet.");
+            frame.showMasterDataPanel(employee);
         });
 
         waitingListButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Waiting list not implemented yet.");
+            frame.showWaitingListPanel(employee);
         });
 
         airportSchedulesButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Airport schedules not implemented yet.");
+            frame.showAirportSchedulesPanel(employee);
         });
 
         customerQuestionsButton.addActionListener(e -> {
