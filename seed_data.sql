@@ -146,5 +146,4 @@ Insert into Employee (employee_ssn, firstName, lastName, acc_username, acc_passw
 ('22222222222', 'customerrep', 'test', 'customerrep', 'test', 'CUSTOMER_REPRESENTATIVE'),
 ('11111111111', 'admin', 'test', 'admin', 'test', 'ADMIN');
 INSERT INTO Customer (customer_ssn, email, gender, dob, firstName, lastName, phone, account_id, username, acc_password) VALUES 
-					('111-11-1111', 'jb@example.com', 'male', '2004-08-10', 'jason', 'billings', '000-000-0000', 1001, 'jasonb', 'password');
-
+('111-11-1111', 'jb@example.com', 'male', '2004-08-10', 'jason', 'billings', '000-000-0000', 1001, 'jasonb', 'password');

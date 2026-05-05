@@ -20,7 +20,7 @@ CREATE TABLE Aircraft (
     first_class int, # of first class seats on aircraft
     model varchar(100),
     PRIMARY KEY (aircraft_id),
-    FOREIGN KEY (airline_id) REFERENCES Airline(airline_id)
+    FOREIGN KEY (airline_id) REFERENCES Airline(airline_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Operates ( #removed aircraft_id from operates
@@ -40,10 +40,10 @@ CREATE TABLE Flight ( #removed dotw_op entirely, will instead generate flight_in
     arr_airport char(3) NOT NULL,
     dep_airport char(3) NOT NULL,
     PRIMARY KEY (airline_id, flight_num), # removed aircraft_id from the primary key, unnecssary
-    FOREIGN KEY (airline_id) REFERENCES Airline(airline_id),
-    FOREIGN KEY (aircraft_id) REFERENCES Aircraft(aircraft_id),
-    FOREIGN KEY (arr_airport) REFERENCES Airport(airport_id), # added this foreign key referencing airport
-    FOREIGN KEY (dep_airport) REFERENCES Airport(airport_id) # added this foreign key referencing airport
+    FOREIGN KEY (airline_id) REFERENCES Airline(airline_id) ON DELETE CASCADE,
+    FOREIGN KEY (aircraft_id) REFERENCES Aircraft(aircraft_id) ON DELETE CASCADE,
+    FOREIGN KEY (arr_airport) REFERENCES Airport(airport_id) ON DELETE CASCADE, # added this foreign key referencing airport
+    FOREIGN KEY (dep_airport) REFERENCES Airport(airport_id) ON DELETE CASCADE # added this foreign key referencing airport
 ); 
 
 CREATE TABLE Flight_Instance (
@@ -56,8 +56,8 @@ CREATE TABLE Flight_Instance (
     fare DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     status ENUM('Scheduled', 'Cancelled', 'Delayed', 'Completed') DEFAULT 'Scheduled',
     PRIMARY KEY (instance_id),
-    FOREIGN KEY (airline_id, flight_num) REFERENCES Flight(airline_id, flight_num),
-    FOREIGN KEY (aircraft_id) REFERENCES Aircraft(aircraft_id),
+    FOREIGN KEY (airline_id, flight_num) REFERENCES Flight(airline_id, flight_num) ON DELETE CASCADE,
+    FOREIGN KEY (aircraft_id) REFERENCES Aircraft(aircraft_id) ON DELETE CASCADE,
 	UNIQUE (airline_id, flight_num, dep_datetime)
 );
 
@@ -136,8 +136,8 @@ CREATE TABLE Ticket ( # replaced sequence_num with seqment_num; added reservatio
     ticket_class varchar(20) NOT NULL, # merged class with tickets, 
     status ENUM('Booked', 'Cancelled') NOT NULL DEFAULT 'Booked', # added status
     PRIMARY KEY (ticket_num),
-	FOREIGN KEY (reservation_id) REFERENCES Reservations(reservation_id),
-    FOREIGN KEY (instance_id) REFERENCES Flight_Instance(instance_id),
+	FOREIGN KEY (reservation_id) REFERENCES Reservations(reservation_id) ON DELETE CASCADE,
+    FOREIGN KEY (instance_id) REFERENCES Flight_Instance(instance_id) ON DELETE CASCADE,
     FOREIGN KEY (ticket_class) REFERENCES Ticket_Class(ticket_class),
 	UNIQUE (reservation_id, direction, segment_num)
 );
@@ -175,7 +175,7 @@ CREATE TABLE Waiting_Line (
     time_entered DATETIME default current_timestamp,
 	status ENUM('WAITING', 'NOTIFIED', 'BOOKED', 'CANCELLED') DEFAULT 'WAITING',
 	PRIMARY KEY (waitlist_id),
-    FOREIGN KEY (customer_ssn) REFERENCES Customer(customer_ssn),
-    FOREIGN KEY (instance_id) REFERENCES Flight_Instance(instance_id),
+    FOREIGN KEY (customer_ssn) REFERENCES Customer(customer_ssn) ON DELETE CASCADE,
+    FOREIGN KEY (instance_id) REFERENCES Flight_Instance(instance_id) ON DELETE CASCADE,
     UNIQUE (customer_ssn, instance_id)
 );

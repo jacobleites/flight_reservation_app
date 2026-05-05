@@ -207,4 +207,30 @@ public class WaitingLineDAO {
                 rs.getString("status")
         );
     }
+
+    public List<Object[]> getFullWaitingListForInstance(int instanceId) {
+        String sql = "SELECT w.priority_num, c.firstName, c.lastName, c.customer_ssn, w.time_entered, w.status " +
+                    "FROM Waiting_Line w JOIN Customer c ON w.customer_ssn = c.customer_ssn " +
+                    "WHERE w.instance_id = ? AND w.status IN ('WAITING', 'NOTIFIED') " +
+                    "ORDER BY w.priority_num ASC";
+        List<Object[]> list = new ArrayList<>();
+        try (Connection conn = db.DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, instanceId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Object[]{
+                        rs.getInt("priority_num"),
+                        rs.getString("firstName") + " " + rs.getString("lastName"),
+                        rs.getString("customer_ssn"),
+                        rs.getString("time_entered"),
+                        rs.getString("status")
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

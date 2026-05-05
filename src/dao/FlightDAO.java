@@ -54,6 +54,22 @@ public class FlightDAO {
         return null;
     }
 
+    // retrieve all flights without filters
+    public List<Flight> getAllFlights() {
+        String sql = "SELECT flight_num, airline_id, aircraft_id, dep_time, arr_time, arr_airport, dep_airport FROM Flight";
+        List<Flight> flights = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                flights.add(mapFlight(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return flights;
+    }
+
     public boolean addFlight(Flight flight) {
         String sql = "INSERT INTO Flight (flight_num, airline_id, aircraft_id, dep_time, arr_time, arr_airport, dep_airport) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";

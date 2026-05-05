@@ -198,4 +198,23 @@ public class FlightInstanceDAO {
 
         return flights;
     }
+
+    public List<models.FlightInstance> getSchedulesByAirport(String airportId, boolean isDeparture) {
+        String sql = SEARCH_SELECT + "WHERE " + (isDeparture ? "f.dep_airport = ?" : "f.arr_airport = ?") + 
+                    " ORDER BY fi.dep_datetime ASC";
+    
+        List<models.FlightInstance> flights = new ArrayList<>();
+        try (Connection conn = db.DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, airportId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    flights.add(mapFlightInstance(rs)); // Reusing existing mapping logic
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return flights;
+    }
 }
