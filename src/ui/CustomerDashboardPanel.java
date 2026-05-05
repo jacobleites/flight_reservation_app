@@ -1,5 +1,6 @@
 package ui;
 
+import dao.WaitingLineDAO;
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
@@ -11,11 +12,13 @@ public class CustomerDashboardPanel extends JPanel {
     private final MainFrame frame;
     private final Customer customer;
     private final BookingService bookingService;
+    private final WaitingLineDAO waitingLineDAO;
 
     public CustomerDashboardPanel(MainFrame frame, Customer customer) {
         this.frame = frame;
         this.customer = customer;
         this.bookingService = new BookingService();
+        this.waitingLineDAO = new WaitingLineDAO();
 
         setLayout(new BorderLayout());
 
@@ -74,13 +77,64 @@ public class CustomerDashboardPanel extends JPanel {
             return;
         }
 
+        List<Object[]> notificationDetails = waitingLineDAO.getNotificationDetailsForCustomer(customer.getSsn());
+        if (notificationDetails.isEmpty()) {
+            StringBuilder fallback = new StringBuilder();
+            for (WaitingLineEntry entry : notifications) {
+                fallback.append("A seat may be available for a flight you requested.\n")
+                        .append("Instance ID: ").append(entry.getInstanceId()).append("\n")
+                        .append("You may now try booking this flight.\n\n");
+            }
+            JOptionPane.showMessageDialog(this, fallback.toString(), "Waitlist Notifications", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
         StringBuilder sb = new StringBuilder();
-        for (WaitingLineEntry entry : notifications) {
-            sb.append("A seat may be available for flight instance ")
-                    .append(entry.getInstanceId())
-                    .append(". You may now try booking this flight.")
-                    .append("\n");
+        for (Object[] row : notificationDetails) {
+            int instanceId = (Integer) row[0];
+            String airlineId = (String) row[1];
+            Integer flightNum = row[2] == null ? null : ((Number) row[2]).intValue();
+            String depDateTime = (String) row[3];
+            String arrDateTime = (String) row[4];
+            String depAirport = (String) row[5];
+            String arrAirport = (String) row[6];
+            String depAirportName = (String) row[7];
+            String arrAirportName = (String) row[8];
+            String aircraftModel = (String) row[9];
+
+            sb.append("A seat may be available for a flight you requested.\n");
+            sb.append("Instance ID: ").append(instanceId).append("\n");
+            if (airlineId != null && flightNum != null) {
+                sb.append("Flight: ").append(airlineId).append(" ").append(flightNum).append("\n");
+            }
+            if (depAirport != null || arrAirport != null) {
+                sb.append("Route: ")
+                        .append(formatAirport(depAirportName, depAirport))
+                        .append(" -> ")
+                        .append(formatAirport(arrAirportName, arrAirport))
+                        .append("\n");
+            }
+            if (depDateTime != null) {
+                sb.append("Departure: ").append(depDateTime).append("\n");
+            }
+            if (arrDateTime != null) {
+                sb.append("Arrival: ").append(arrDateTime).append("\n");
+            }
+            if (aircraftModel != null && !aircraftModel.trim().isEmpty()) {
+                sb.append("Aircraft: ").append(aircraftModel).append("\n");
+            }
+            sb.append("You may now try booking this flight.\n\n");
         }
         JOptionPane.showMessageDialog(this, sb.toString(), "Waitlist Notifications", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private String formatAirport(String airportName, String airportId) {
+        if (airportName == null || airportName.trim().isEmpty()) {
+            return airportId;
+        }
+        if (airportId == null || airportId.trim().isEmpty()) {
+            return airportName;
+        }
+        return airportName + " (" + airportId + ")";
     }
 }

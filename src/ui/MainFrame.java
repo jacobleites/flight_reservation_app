@@ -42,7 +42,7 @@ public class MainFrame extends JFrame {
     public void showEmployeeDashboard(Employee employee) {
 
     // Check the role from the Employee object
-        if ("Admin".equalsIgnoreCase(employee.getRole())) {
+        if ("ADMIN".equalsIgnoreCase(employee.getRole())) {
             AdminDashboardPanel panel = new AdminDashboardPanel(this, employee);
             mainPanel.add(panel, "ADMIN_DASHBOARD");
             showScreen("ADMIN_DASHBOARD");            

@@ -82,6 +82,45 @@ public class MasterDataPanel extends JPanel {
         JTable table = new JTable(flightModel);
         refreshFlightTable(flightModel);
 
+        JButton createBtn = new JButton("Create Flight");
+        createBtn.addActionListener(e -> {
+            Flight created = promptForFlight(null);
+            if (created != null && flightDAO.addFlight(created)) {
+                refreshFlightTable(flightModel);
+            } else if (created != null) {
+                JOptionPane.showMessageDialog(this, "Could not create flight. Check IDs and constraints.");
+            }
+        });
+
+        JButton editBtn = new JButton("Edit Flight");
+        editBtn.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Select a flight to edit.");
+                return;
+            }
+            Flight existing = new Flight(
+                    (int) flightModel.getValueAt(row, 1),
+                    (String) flightModel.getValueAt(row, 0),
+                    0,
+                    (String) flightModel.getValueAt(row, 4),
+                    (String) flightModel.getValueAt(row, 5),
+                    (String) flightModel.getValueAt(row, 3),
+                    (String) flightModel.getValueAt(row, 2)
+            );
+            Flight full = flightDAO.getFlight(existing.getAirlineId(), existing.getFlightNumber());
+            if (full == null) {
+                JOptionPane.showMessageDialog(this, "Could not load full flight details.");
+                return;
+            }
+            Flight updated = promptForFlight(full);
+            if (updated != null && flightDAO.updateFlight(updated)) {
+                refreshFlightTable(flightModel);
+            } else if (updated != null) {
+                JOptionPane.showMessageDialog(this, "Could not update flight.");
+            }
+        });
+
         JButton deleteBtn = new JButton("Delete Flight");
         deleteBtn.addActionListener(e -> {
             int row = table.getSelectedRow();
@@ -100,7 +139,11 @@ public class MasterDataPanel extends JPanel {
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(deleteBtn, BorderLayout.SOUTH);
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        actions.add(createBtn);
+        actions.add(editBtn);
+        actions.add(deleteBtn);
+        panel.add(actions, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -110,6 +153,37 @@ public class MasterDataPanel extends JPanel {
         aircraftModel = new DefaultTableModel(new String[]{"Airline", "ID", "Capacity", "Model"}, 0);
         JTable table = new JTable(aircraftModel);
         refreshAircraftTable(aircraftModel);
+
+        JButton createBtn = new JButton("Create Aircraft");
+        createBtn.addActionListener(e -> {
+            Aircraft created = promptForAircraft(null);
+            if (created != null && aircraftDAO.addAircraft(created)) {
+                refreshAircraftTable(aircraftModel);
+            } else if (created != null) {
+                JOptionPane.showMessageDialog(this, "Could not create aircraft. Check IDs and constraints.");
+            }
+        });
+
+        JButton editBtn = new JButton("Edit Aircraft");
+        editBtn.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Select an aircraft to edit.");
+                return;
+            }
+            int id = (int) aircraftModel.getValueAt(row, 1);
+            Aircraft existing = aircraftDAO.getAircraftById(id);
+            if (existing == null) {
+                JOptionPane.showMessageDialog(this, "Could not load aircraft details.");
+                return;
+            }
+            Aircraft updated = promptForAircraft(existing);
+            if (updated != null && aircraftDAO.updateAircraft(updated)) {
+                refreshAircraftTable(aircraftModel);
+            } else if (updated != null) {
+                JOptionPane.showMessageDialog(this, "Could not update aircraft.");
+            }
+        });
 
         JButton deleteBtn = new JButton("Delete Aircraft");
         deleteBtn.addActionListener(e -> {
@@ -127,7 +201,11 @@ public class MasterDataPanel extends JPanel {
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(deleteBtn, BorderLayout.SOUTH);
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        actions.add(createBtn);
+        actions.add(editBtn);
+        actions.add(deleteBtn);
+        panel.add(actions, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -137,6 +215,37 @@ public class MasterDataPanel extends JPanel {
         airportModel = new DefaultTableModel(new String[]{"ID", "Name", "City"}, 0);
         JTable table = new JTable(airportModel);
         refreshAirportTable(airportModel);
+
+        JButton createBtn = new JButton("Create Airport");
+        createBtn.addActionListener(e -> {
+            Airport created = promptForAirport(null);
+            if (created != null && airportDAO.addAirport(created)) {
+                refreshAirportTable(airportModel);
+            } else if (created != null) {
+                JOptionPane.showMessageDialog(this, "Could not create airport. Check ID uniqueness.");
+            }
+        });
+
+        JButton editBtn = new JButton("Edit Airport");
+        editBtn.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Select an airport to edit.");
+                return;
+            }
+            String id = (String) airportModel.getValueAt(row, 0);
+            Airport existing = airportDAO.getAirportById(id);
+            if (existing == null) {
+                JOptionPane.showMessageDialog(this, "Could not load airport details.");
+                return;
+            }
+            Airport updated = promptForAirport(existing);
+            if (updated != null && airportDAO.updateAirport(updated)) {
+                refreshAirportTable(airportModel);
+            } else if (updated != null) {
+                JOptionPane.showMessageDialog(this, "Could not update airport.");
+            }
+        });
 
         JButton deleteBtn = new JButton("Delete Airport");
         deleteBtn.addActionListener(e -> {
@@ -154,7 +263,11 @@ public class MasterDataPanel extends JPanel {
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(deleteBtn, BorderLayout.SOUTH);
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        actions.add(createBtn);
+        actions.add(editBtn);
+        actions.add(deleteBtn);
+        panel.add(actions, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -175,5 +288,171 @@ public class MasterDataPanel extends JPanel {
         if (model == null) return;
         model.setRowCount(0);
         airportDAO.getAllAirports().forEach(a -> model.addRow(new Object[]{a.getId(), a.getName(), a.getCity()}));
+    }
+
+    private Airport promptForAirport(Airport existing) {
+        JTextField idField = new JTextField(existing == null ? "" : existing.getId(), 8);
+        JTextField nameField = new JTextField(existing == null ? "" : existing.getName(), 20);
+        JTextField cityField = new JTextField(existing == null ? "" : existing.getCity(), 20);
+        if (existing != null) {
+            idField.setEditable(false);
+        }
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 8));
+        form.add(new JLabel("Airport ID (3 letters):"));
+        form.add(idField);
+        form.add(new JLabel("Airport Name:"));
+        form.add(nameField);
+        form.add(new JLabel("City:"));
+        form.add(cityField);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                form,
+                existing == null ? "Create Airport" : "Edit Airport",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+        if (result != JOptionPane.OK_OPTION) {
+            return null;
+        }
+
+        String id = idField.getText().trim().toUpperCase();
+        String name = nameField.getText().trim();
+        String city = cityField.getText().trim();
+        if (id.length() != 3 || name.isEmpty() || city.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Airport ID must be 3 letters, and name/city are required.");
+            return null;
+        }
+        return new Airport(id, name, city);
+    }
+
+    private Aircraft promptForAircraft(Aircraft existing) {
+        JTextField airlineField = new JTextField(existing == null ? "" : existing.getAirlineId(), 8);
+        JTextField idField = new JTextField(existing == null ? "" : String.valueOf(existing.getAircraftId()), 8);
+        JTextField capacityField = new JTextField(existing == null ? "" : String.valueOf(existing.getCapacity()), 8);
+        JTextField modelField = new JTextField(existing == null ? "" : existing.getModel(), 20);
+        if (existing != null) {
+            idField.setEditable(false);
+        }
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 8));
+        form.add(new JLabel("Airline ID (2 letters):"));
+        form.add(airlineField);
+        form.add(new JLabel("Aircraft ID:"));
+        form.add(idField);
+        form.add(new JLabel("Capacity:"));
+        form.add(capacityField);
+        form.add(new JLabel("Model:"));
+        form.add(modelField);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                form,
+                existing == null ? "Create Aircraft" : "Edit Aircraft",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+        if (result != JOptionPane.OK_OPTION) {
+            return null;
+        }
+
+        String airlineId = airlineField.getText().trim().toUpperCase();
+        String model = modelField.getText().trim();
+        int aircraftId;
+        int capacity;
+        try {
+            aircraftId = Integer.parseInt(idField.getText().trim());
+            capacity = Integer.parseInt(capacityField.getText().trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Aircraft ID and capacity must be valid numbers.");
+            return null;
+        }
+        if (airlineId.length() != 2 || model.isEmpty() || aircraftId <= 0 || capacity <= 0) {
+            JOptionPane.showMessageDialog(this, "Airline ID must be 2 letters, and numeric values must be positive.");
+            return null;
+        }
+        return new Aircraft(airlineId, aircraftId, capacity, model);
+    }
+
+    private Flight promptForFlight(Flight existing) {
+        JTextField airlineField = new JTextField(existing == null ? "" : existing.getAirlineId(), 8);
+        JTextField flightNumField = new JTextField(existing == null ? "" : String.valueOf(existing.getFlightNumber()), 8);
+        JTextField aircraftIdField = new JTextField(existing == null ? "" : String.valueOf(existing.getAircraftId()), 8);
+        JTextField depAirportField = new JTextField(existing == null ? "" : existing.getDepartureAirport(), 8);
+        JTextField arrAirportField = new JTextField(existing == null ? "" : existing.getArrivalAirport(), 8);
+        JTextField depTimeField = new JTextField(existing == null ? "" : existing.getDepartureTime(), 10);
+        JTextField arrTimeField = new JTextField(existing == null ? "" : existing.getArrivalTime(), 10);
+        if (existing != null) {
+            airlineField.setEditable(false);
+            flightNumField.setEditable(false);
+        }
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 8));
+        form.add(new JLabel("Airline ID (2 letters):"));
+        form.add(airlineField);
+        form.add(new JLabel("Flight Number:"));
+        form.add(flightNumField);
+        form.add(new JLabel("Aircraft ID:"));
+        form.add(aircraftIdField);
+        form.add(new JLabel("Departure Airport (3 letters):"));
+        form.add(depAirportField);
+        form.add(new JLabel("Arrival Airport (3 letters):"));
+        form.add(arrAirportField);
+        form.add(new JLabel("Departure Time (HH:MM[:SS]):"));
+        form.add(depTimeField);
+        form.add(new JLabel("Arrival Time (HH:MM[:SS]):"));
+        form.add(arrTimeField);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                form,
+                existing == null ? "Create Flight" : "Edit Flight",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+        if (result != JOptionPane.OK_OPTION) {
+            return null;
+        }
+
+        String airlineId = airlineField.getText().trim().toUpperCase();
+        String depAirport = depAirportField.getText().trim().toUpperCase();
+        String arrAirport = arrAirportField.getText().trim().toUpperCase();
+        String depTime = normalizeTime(depTimeField.getText().trim());
+        String arrTime = normalizeTime(arrTimeField.getText().trim());
+        int flightNum;
+        int aircraftId;
+        try {
+            flightNum = Integer.parseInt(flightNumField.getText().trim());
+            aircraftId = Integer.parseInt(aircraftIdField.getText().trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Flight number and aircraft ID must be valid numbers.");
+            return null;
+        }
+
+        if (airlineId.length() != 2 || depAirport.length() != 3 || arrAirport.length() != 3) {
+            JOptionPane.showMessageDialog(this, "Airline ID must be 2 letters and airport codes must be 3 letters.");
+            return null;
+        }
+        if (depTime == null || arrTime == null) {
+            JOptionPane.showMessageDialog(this, "Times must be in HH:MM or HH:MM:SS format.");
+            return null;
+        }
+        if (flightNum <= 0 || aircraftId <= 0) {
+            JOptionPane.showMessageDialog(this, "Flight number and aircraft ID must be positive.");
+            return null;
+        }
+
+        return new Flight(flightNum, airlineId, aircraftId, depTime, arrTime, arrAirport, depAirport);
+    }
+
+    private String normalizeTime(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        if (value.matches("^\\d{2}:\\d{2}$")) {
+            return value + ":00";
+        }
+        if (value.matches("^\\d{2}:\\d{2}:\\d{2}$")) {
+            return value;
+        }
+        return null;
     }
 }

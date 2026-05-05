@@ -142,8 +142,111 @@ JOIN (
     UNION ALL SELECT 'First'
 ) classes;
 
-Insert into Employee (employee_ssn, firstName, lastName, acc_username, acc_password, role) Values 
-('22222222222', 'customerrep', 'test', 'customerrep', 'test', 'CUSTOMER_REPRESENTATIVE'),
-('11111111111', 'admin', 'test', 'admin', 'test', 'ADMIN');
-INSERT INTO Customer (customer_ssn, email, gender, dob, firstName, lastName, phone, account_id, username, acc_password) VALUES 
-('111-11-1111', 'jb@example.com', 'male', '2004-08-10', 'jason', 'billings', '000-000-0000', 1001, 'jasonb', 'password');
+INSERT INTO Employee (employee_ssn, firstName, lastName, acc_username, acc_password, role) VALUES
+('22222222222', 'Casey', 'Morgan', 'customerrep1', 'test', 'CUSTOMER_REPRESENTATIVE'),
+('33333333333', 'Jordan', 'Patel', 'customerrep2', 'test', 'CUSTOMER_REPRESENTATIVE'),
+('11111111111', 'Alex', 'Admin', 'admin', 'test', 'ADMIN');
+
+INSERT INTO Customer (customer_ssn, email, gender, dob, firstName, lastName, phone, account_id, username, acc_password) VALUES
+('111-11-1111', 'jason.billings@example.com', 'male', '2004-08-10', 'Jason', 'Billings', '201-555-0101', 1001, 'jasonb', 'password'),
+('222-22-2222', 'maya.chen@example.com', 'female', '1998-03-22', 'Maya', 'Chen', '201-555-0102', 1002, 'mayac', 'password'),
+('333-33-3333', 'liam.ortiz@example.com', 'male', '1995-11-12', 'Liam', 'Ortiz', '201-555-0103', 1003, 'liamo', 'password'),
+('444-44-4444', 'sofia.khan@example.com', 'female', '2001-01-08', 'Sofia', 'Khan', '201-555-0104', 1004, 'sofiak', 'password'),
+('555-55-5555', 'ethan.reed@example.com', 'male', '1992-07-30', 'Ethan', 'Reed', '201-555-0105', 1005, 'ethanr', 'password'),
+('666-66-6666', 'ava.murphy@example.com', 'female', '1999-09-14', 'Ava', 'Murphy', '201-555-0106', 1006, 'avam', 'password'),
+('777-77-7777', 'noah.garcia@example.com', 'male', '1996-12-05', 'Noah', 'Garcia', '201-555-0107', 1007, 'noahg', 'password'),
+('888-88-8888', 'mia.patel@example.com', 'female', '2000-06-18', 'Mia', 'Patel', '201-555-0108', 1008, 'miap', 'password'),
+('999-99-9999', 'elijah.ross@example.com', 'male', '1994-10-27', 'Elijah', 'Ross', '201-555-0109', 1009, 'elijahr', 'password'),
+('123-45-6789', 'zoe.foster@example.com', 'female', '1997-04-03', 'Zoe', 'Foster', '201-555-0110', 1010, 'zoef', 'password');
+
+INSERT INTO Reservations (reservation_id, customer_ssn, reservation_date, status, booking_fee, total_price, trip_type) VALUES
+(2001, '111-11-1111', '2026-05-02 08:15:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2002, '111-11-1111', '2026-05-03 14:20:00', 'Booked', 25.00, 0.00, 'Round_Trip'),
+(2003, '222-22-2222', '2026-05-03 09:10:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2004, '222-22-2222', '2026-05-04 10:35:00', 'Booked', 25.00, 0.00, 'Round_Trip'),
+(2005, '333-33-3333', '2026-05-05 11:45:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2006, '333-33-3333', '2026-05-02 07:55:00', 'Booked', 25.00, 0.00, 'Round_Trip'),
+(2007, '444-44-4444', '2026-05-06 13:30:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2008, '444-44-4444', '2026-05-07 16:40:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2009, '555-55-5555', '2026-05-01 06:05:00', 'Booked', 25.00, 0.00, 'Round_Trip'),
+(2010, '555-55-5555', '2026-05-05 18:25:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2011, '666-66-6666', '2026-05-03 12:10:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2012, '666-66-6666', '2026-05-04 15:20:00', 'Booked', 25.00, 0.00, 'Round_Trip'),
+(2013, '777-77-7777', '2026-05-02 11:50:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2014, '777-77-7777', '2026-05-05 09:00:00', 'Booked', 25.00, 0.00, 'Round_Trip'),
+(2015, '888-88-8888', '2026-05-08 08:35:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2016, '888-88-8888', '2026-05-04 19:05:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2017, '999-99-9999', '2026-05-03 07:30:00', 'Booked', 25.00, 0.00, 'Round_Trip'),
+(2018, '999-99-9999', '2026-05-02 20:10:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2019, '123-45-6789', '2026-05-08 06:50:00', 'Booked', 25.00, 0.00, 'One_Way'),
+(2020, '123-45-6789', '2026-05-01 17:45:00', 'Booked', 25.00, 0.00, 'Round_Trip');
+
+INSERT INTO Ticket (reservation_id, instance_id, segment_num, fare, pay_date, special_meal, direction, ticket_class, status)
+SELECT
+    p.reservation_id,
+    fi.instance_id,
+    p.segment_num,
+    fci.base_price,
+    DATE_ADD(fi.dep_datetime, INTERVAL -2 DAY),
+    p.special_meal,
+    p.direction,
+    p.ticket_class,
+    'Booked'
+FROM (
+    SELECT 2001 AS reservation_id, 'UA' AS airline_id, 1001 AS flight_num, '2026-05-02' AS dep_date, 1 AS segment_num, FALSE AS special_meal, 'Outbound' AS direction, 'Economy' AS ticket_class
+    UNION ALL SELECT 2002, 'AA', 1402, '2026-05-03', 1, TRUE, 'Outbound', 'Business'
+    UNION ALL SELECT 2002, 'AA', 5402, '2026-05-06', 1, TRUE, 'Return', 'Business'
+    UNION ALL SELECT 2003, 'DL', 1204, '2026-05-03', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2004, 'B6', 1601, '2026-05-04', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2004, 'B6', 5601, '2026-05-07', 1, FALSE, 'Return', 'Economy'
+    UNION ALL SELECT 2005, 'UA', 1003, '2026-05-05', 1, TRUE, 'Outbound', 'First'
+    UNION ALL SELECT 2006, 'DL', 1202, '2026-05-02', 1, FALSE, 'Outbound', 'Business'
+    UNION ALL SELECT 2006, 'DL', 5202, '2026-05-08', 1, FALSE, 'Return', 'Business'
+    UNION ALL SELECT 2007, 'AA', 1404, '2026-05-06', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2008, 'B6', 1603, '2026-05-07', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2009, 'UA', 1005, '2026-05-01', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2009, 'UA', 5005, '2026-05-09', 1, FALSE, 'Return', 'Economy'
+    UNION ALL SELECT 2010, 'DL', 5204, '2026-05-05', 1, TRUE, 'Outbound', 'First'
+    UNION ALL SELECT 2011, 'AA', 5405, '2026-05-03', 1, FALSE, 'Outbound', 'Business'
+    UNION ALL SELECT 2012, 'UA', 1002, '2026-05-04', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2012, 'UA', 5002, '2026-05-06', 1, FALSE, 'Return', 'Economy'
+    UNION ALL SELECT 2013, 'B6', 1604, '2026-05-02', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2014, 'DL', 1201, '2026-05-05', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2014, 'DL', 5201, '2026-05-07', 1, FALSE, 'Return', 'Economy'
+    UNION ALL SELECT 2015, 'AA', 1401, '2026-05-08', 1, TRUE, 'Outbound', 'First'
+    UNION ALL SELECT 2016, 'UA', 5006, '2026-05-04', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2017, 'B6', 1602, '2026-05-03', 1, FALSE, 'Outbound', 'Business'
+    UNION ALL SELECT 2017, 'B6', 5602, '2026-05-09', 1, FALSE, 'Return', 'Business'
+    UNION ALL SELECT 2018, 'AA', 5406, '2026-05-02', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2019, 'UA', 1004, '2026-05-08', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2020, 'B6', 1601, '2026-05-01', 1, FALSE, 'Outbound', 'Economy'
+    UNION ALL SELECT 2020, 'B6', 5601, '2026-05-10', 1, FALSE, 'Return', 'Economy'
+) p
+JOIN Flight_Instance fi
+    ON fi.airline_id = p.airline_id
+    AND fi.flight_num = p.flight_num
+    AND DATE(fi.dep_datetime) = p.dep_date
+JOIN Flight_Class_Inventory fci
+    ON fci.instance_id = fi.instance_id
+    AND fci.ticket_class = p.ticket_class;
+
+UPDATE Reservations r
+JOIN (
+    SELECT reservation_id, ROUND(SUM(fare), 2) AS fare_total
+    FROM Ticket
+    WHERE status = 'Booked'
+    GROUP BY reservation_id
+) t ON t.reservation_id = r.reservation_id
+SET r.total_price = ROUND(r.booking_fee + t.fare_total, 2)
+WHERE r.reservation_id BETWEEN 2001 AND 2020;
+
+UPDATE Flight_Class_Inventory fci
+LEFT JOIN (
+    SELECT instance_id, ticket_class, COUNT(*) AS booked_count
+    FROM Ticket
+    WHERE status = 'Booked'
+    GROUP BY instance_id, ticket_class
+) bt
+    ON bt.instance_id = fci.instance_id
+    AND bt.ticket_class = fci.ticket_class
+SET fci.available_seats = GREATEST(fci.total_seats - COALESCE(bt.booked_count, 0), 0);

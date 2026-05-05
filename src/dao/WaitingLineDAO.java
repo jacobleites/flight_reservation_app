@@ -164,6 +164,45 @@ public class WaitingLineDAO {
         return entries;
     }
 
+    public List<Object[]> getNotificationDetailsForCustomer(String customerSsn) {
+        String sql = "SELECT w.instance_id, fi.airline_id, fi.flight_num, fi.dep_datetime, fi.arr_datetime, " +
+                "f.dep_airport, f.arr_airport, dep.airport_name AS dep_airport_name, " +
+                "arr.airport_name AS arr_airport_name, ac.model AS aircraft_model " +
+                "FROM Waiting_Line w " +
+                "LEFT JOIN Flight_Instance fi ON fi.instance_id = w.instance_id " +
+                "LEFT JOIN Flight f ON f.airline_id = fi.airline_id AND f.flight_num = fi.flight_num " +
+                "LEFT JOIN Airport dep ON dep.airport_id = f.dep_airport " +
+                "LEFT JOIN Airport arr ON arr.airport_id = f.arr_airport " +
+                "LEFT JOIN Aircraft ac ON ac.aircraft_id = fi.aircraft_id " +
+                "WHERE w.customer_ssn = ? AND w.status = 'NOTIFIED' " +
+                "ORDER BY w.time_entered ASC";
+
+        List<Object[]> details = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, customerSsn);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    details.add(new Object[]{
+                            rs.getInt("instance_id"),
+                            rs.getString("airline_id"),
+                            rs.getObject("flight_num"),
+                            rs.getString("dep_datetime"),
+                            rs.getString("arr_datetime"),
+                            rs.getString("dep_airport"),
+                            rs.getString("arr_airport"),
+                            rs.getString("dep_airport_name"),
+                            rs.getString("arr_airport_name"),
+                            rs.getString("aircraft_model")
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return details;
+    }
+
     public boolean markAsBooked(Connection conn, String customerSsn, int instanceId) throws SQLException {
         String sql = "UPDATE Waiting_Line SET status = 'BOOKED' " +
                 "WHERE customer_ssn = ? AND instance_id = ? AND status = 'NOTIFIED'";
